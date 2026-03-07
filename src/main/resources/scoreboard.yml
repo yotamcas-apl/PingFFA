@@ -1,0 +1,17 @@
+# scoreboard.yml
+settings:
+  title: "&b&lPING PVP &7| &fFFA"
+  update-ticks: 20
+
+# Use placeholders: %player%, %ping%, %kills%, %deaths%, %kdr%, %streak%
+lines:
+  - "&7&m------------------"
+  - "&fPlayer: &e%player%"
+  - "&fPing: &a%ping%ms"
+  - " "
+  - "&fKills: &b%kills%"
+  - "&fDeaths: &b%deaths%"
+  - "&fKDR: &3%kdr%"
+  - "  "
+  - "&fStreak: &d%streak%"
+  - "&7&m------------------"

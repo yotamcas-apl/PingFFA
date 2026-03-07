@@ -1,0 +1,47 @@
+menu:
+  title: "Settings"
+  placeholders:
+    enabled: "&aEnabled"
+    disabled: "&cDisabled"
+
+  PrivacyMode:
+    name: "&ePrivacy Mode"
+    material: NAME_TAG
+    slot: 11
+    lore:
+      - "&7Automatically hides the scoreboard and chat"
+      - "&7during streams to prevent Stream Sniping."
+      - "  "
+      - "&7Status: %status%"
+  privateMessages:
+    name: "&ePrivate Messages"
+    material: WRITABLE_BOOK
+    slot: 12
+    lore:
+      - "&7Toggle your private messages (PM)"
+      - "  "
+      - "&7Status: %status%"
+  autoGG:
+    name: "&eAuto GG"
+    material: SKELETON_SKULL
+    slot: 13
+    lore:
+      - "&7Send a message 'gg' automatically when killed someone"
+      - "  "
+      - "&7Status: %status%"
+  mentionSound:
+    name: "&eMention Sound"
+    material: ENDER_PEARL
+    slot: 14
+    lore:
+      - "&7Toggle the sound when you are mentioned in the chat"
+      - "  "
+      - "&7Status: %status%"
+  toggleQuickRespawn:
+    name: "&eQuick Respawn Item"
+    material: FEATHER
+    slot: 15
+    lore:
+      - "&7Toggle to get a quick respawn item on death"
+      - "  "
+      - "&7Status: %status%"
