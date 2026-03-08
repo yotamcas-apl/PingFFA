@@ -14,7 +14,7 @@ items:
     name: '&bLeaderboards'
     slot: 4
     hide-attributes: true
-    right-click-command: leaderboards
+    right-click-command: leaderboard
   settings:
     item: 'COMPASS'
     name: '&bSettings'

@@ -1,16 +1,11 @@
 prefix: "&b&lPingFFA &7|&r "
 
 # Streak settings
-StreakThreshold: 5
-StreakLoseThreshold: 5
-StreakMessage:
-  - " "
-  - "&a%player% &7reached a kill streak of &a%streak%&7!"
-  - " "
-StreakLose:
-  - " "
-  - "&c%player% &7just lost their kill streak of &c%streak%&7!"
-  - " "
+stats:
+  streak-threshold: 5
+  messages:
+    kill-streak: "&b&lSTREAK &8» &b%player% &7is on a &3%streak% &7kill streak!"
+    streak-ended: "&b&lSTREAK &8» &b%player%&7's streak of &3%streak% &7was ended!"
 
 # Gameplay settings
 chat-formatter:
@@ -71,8 +66,6 @@ combat-tagger:
 blacklisted-nicknames:
   - Fuck
   - Dick
-  - DarkxxIsBad
-  - XyrisPluginsBad
 
 # Messages
 messages:

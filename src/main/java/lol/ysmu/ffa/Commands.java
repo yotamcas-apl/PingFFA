@@ -48,7 +48,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
         String subCommand = args[0].toLowerCase();
         switch (subCommand) {
-            // Reload Command
             case "reload":
                 Main.getInstance().reloadConfig();
                 Items.loadSpawnItemsConfig();
@@ -60,7 +59,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 sender.sendMessage(formatColors("&7to apply the changes made in any of the plugin's files."));
                 sender.sendMessage(formatColors(" "));
                 break;
-            // SpawnItems Command
+
             case "spawnitems":
                 if (args.length < 2) {
                     Items.sendInvalidCommandMessage(sender);
@@ -89,7 +88,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                         return true;
                 }
                 break;
-            // Edit Stats Command
+
             case "editstats":
                 if (args.length < 4) {
                     EditStats.sendInvalidCommandMessage(sender);
@@ -131,7 +130,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                         return true;
                 }
                 break;
-            // Kits Command
+
             case "kits":
                 if (Bukkit.getServer().getPluginManager().isPluginEnabled("XyrisKits")) {
                     sender.sendMessage(formatColors(prefix + "&7Hooked into XyrisKits, Please use the command /kits to manage the kits."));
@@ -185,7 +184,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                         break;
                 }
                 break;
-            // Arenas Command
+
             case "arenas":
                 if (args.length < 2) {
                     ArenaManager.sendInvalidCommandMessage(sender);

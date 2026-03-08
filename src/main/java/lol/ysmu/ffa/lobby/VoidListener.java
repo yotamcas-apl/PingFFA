@@ -19,18 +19,4 @@ public class VoidListener implements Listener {
         this.main = main;
         this.teleportedPlayers = new HashSet<>();
     }
-
-    @EventHandler
-    public void onPlayerDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player victim) {
-            if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
-                if (!teleportedPlayers.contains(victim)) {
-                    event.setCancelled(true);
-                    SpawnManager.teleportToSpawn(victim);
-                    teleportedPlayers.add(victim);
-                    Bukkit.getScheduler().runTaskLater(main, () -> teleportedPlayers.remove(victim), 30L);
-                }
-            }
-        }
-    }
 }

@@ -1,57 +1,48 @@
 package lol.ysmu.ffa.stats;
 
 import lol.ysmu.ffa.DatabaseManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class StatsManager {
     private static final Connection connection = DatabaseManager.getConnection();
-    private static final ConcurrentMap<UUID, StatsManager.PlayerStats> cache = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<UUID, PlayerStats> cache = new ConcurrentHashMap<>();
 
+    // --- TRACKING METHODS ---
     public static void addKills(Player player, int killsToAdd) {
-        UUID uuid = player.getUniqueId();
-        StatsManager.PlayerStats stats = cache.computeIfAbsent(uuid, StatsManager::load);
+        PlayerStats stats = cache.computeIfAbsent(player.getUniqueId(), StatsManager::load);
         stats.kills += killsToAdd;
     }
 
     public static void addDeaths(Player player, int deathsToAdd) {
-        UUID uuid = player.getUniqueId();
-        StatsManager.PlayerStats stats = cache.computeIfAbsent(uuid, StatsManager::load);
+        PlayerStats stats = cache.computeIfAbsent(player.getUniqueId(), StatsManager::load);
         stats.deaths += deathsToAdd;
     }
 
     public static void updateKillStreak(Player player, int newKillStreak) {
-        UUID uuid = player.getUniqueId();
-        StatsManager.PlayerStats stats = cache.computeIfAbsent(uuid, StatsManager::load);
+        PlayerStats stats = cache.computeIfAbsent(player.getUniqueId(), StatsManager::load);
         stats.killStreak = newKillStreak;
         if (newKillStreak > stats.maxKillStreak) {
             stats.maxKillStreak = newKillStreak;
         }
     }
 
-    public static void updateMaxKillStreak(Player player, int newMaxKillStreak) {
-        UUID uuid = player.getUniqueId();
-        cache.computeIfAbsent(uuid, StatsManager::load).maxKillStreak = newMaxKillStreak;
-    }
-
+    // --- GETTERS (Fixes Placeholder & Command Errors) ---
     public static int getCurrentKills(UUID playerUUID) {
         return cache.computeIfAbsent(playerUUID, StatsManager::load).kills;
     }
 
     public static int getCurrentDeaths(UUID playerUUID) {
         return cache.computeIfAbsent(playerUUID, StatsManager::load).deaths;
-    }
-
-    public static double calculateKDR(UUID playerUUID) {
-        StatsManager.PlayerStats stats = cache.computeIfAbsent(playerUUID, StatsManager::load);
-        return stats.deaths == 0 ? (double) stats.kills : Double.parseDouble(String.format("%.2f", (double) stats.kills / (double) stats.deaths));
     }
 
     public static int getCurrentStreak(UUID playerUUID) {
@@ -62,6 +53,13 @@ public class StatsManager {
         return cache.computeIfAbsent(playerUUID, StatsManager::load).maxKillStreak;
     }
 
+    public static double calculateKDR(UUID playerUUID) {
+        PlayerStats stats = cache.computeIfAbsent(playerUUID, StatsManager::load);
+        if (stats.deaths == 0) return (double) stats.kills;
+        return Math.round(((double) stats.kills / stats.deaths) * 100.0) / 100.0;
+    }
+
+    // --- ADMIN EDIT METHODS ---
     public static void editKills(UUID playerUUID, int newKills) {
         cache.computeIfAbsent(playerUUID, StatsManager::load).kills = newKills;
     }
@@ -78,69 +76,68 @@ public class StatsManager {
         cache.computeIfAbsent(playerUUID, StatsManager::load).maxKillStreak = newHighestStreak;
     }
 
-    public static void save(UUID playerUUID) {
-        StatsManager.PlayerStats stats = cache.get(playerUUID);
-        if (stats == null) return;
-
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO player_stats (uuid, kills, deaths, kill_streak, max_kill_streak) VALUES (?, ?, ?, ?, ?) " +
-                            "ON CONFLICT(uuid) DO UPDATE SET kills = ?, deaths = ?, kill_streak = ?, max_kill_streak = ?");
-
-            statement.setString(1, playerUUID.toString());
-            statement.setInt(2, stats.kills);
-            statement.setInt(3, stats.deaths);
-            statement.setInt(4, stats.killStreak);
-            statement.setInt(5, stats.maxKillStreak);
-            statement.setInt(6, stats.kills);
-            statement.setInt(7, stats.deaths);
-            statement.setInt(8, stats.killStreak);
-            statement.setInt(9, stats.maxKillStreak);
-            statement.executeUpdate();
-            statement.close();
-        } catch (SQLException e) {
-            handleSQLException("Failed to save stats for player " + playerUUID, e);
-        }
+    // --- LEADERBOARD & VISIBILITY ---
+    public static void setHidden(UUID uuid, boolean hide) {
+        try (PreparedStatement stmt = connection.prepareStatement("UPDATE player_stats SET hidden = ? WHERE uuid = ?")) {
+            stmt.setInt(1, hide ? 1 : 0);
+            stmt.setString(2, uuid.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    public static void saveAll() {
-        cache.forEach((uuid, stats) -> save(uuid));
-    }
+    public static List<String> getTopKills() { return fetchTopData("kills"); }
+    public static List<String> getTopDeaths() { return fetchTopData("deaths"); }
+    public static List<String> getTopStreaks() { return fetchTopData("max_kill_streak"); }
 
-    public static StatsManager.PlayerStats load(UUID playerUUID) {
-        StatsManager.PlayerStats stats = new StatsManager.PlayerStats();
-
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT kills, deaths, kill_streak, max_kill_streak FROM player_stats WHERE uuid = ?");
-
-            statement.setString(1, playerUUID.toString());
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                stats.kills = resultSet.getInt("kills");
-                stats.deaths = resultSet.getInt("deaths");
-                stats.killStreak = resultSet.getInt("kill_streak");
-                stats.maxKillStreak = resultSet.getInt("max_kill_streak");
+    private static List<String> fetchTopData(String col) {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT uuid, " + col + " FROM player_stats WHERE hidden = 0 ORDER BY " + col + " DESC LIMIT 10";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            int rank = 1;
+            while (rs.next()) {
+                String name = Bukkit.getOfflinePlayer(UUID.fromString(rs.getString("uuid"))).getName();
+                list.add("&7#" + rank + " &b" + (name != null ? name : "Unknown") + " &8- &f" + rs.getInt(col));
+                rank++;
             }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
 
-            resultSet.close();
-            statement.close();
-        } catch (SQLException e) {
-            handleSQLException("Failed to load stats for player " + playerUUID, e);
-        }
+    // --- DATABASE OPS ---
+    public static void save(UUID playerUUID) {
+        PlayerStats stats = cache.get(playerUUID);
+        if (stats == null) return;
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO player_stats (uuid, kills, deaths, kill_streak, max_kill_streak) VALUES (?, ?, ?, ?, ?) " +
+                        "ON CONFLICT(uuid) DO UPDATE SET kills = ?, deaths = ?, kill_streak = ?, max_kill_streak = ?")) {
+            stmt.setString(1, playerUUID.toString());
+            stmt.setInt(2, stats.kills); stmt.setInt(3, stats.deaths);
+            stmt.setInt(4, stats.killStreak); stmt.setInt(5, stats.maxKillStreak);
+            stmt.setInt(6, stats.kills); stmt.setInt(7, stats.deaths);
+            stmt.setInt(8, stats.killStreak); stmt.setInt(9, stats.maxKillStreak);
+            stmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
 
+    public static void saveAll() { cache.keySet().forEach(StatsManager::save); }
+
+    public static PlayerStats load(UUID playerUUID) {
+        PlayerStats stats = new PlayerStats();
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT kills, deaths, kill_streak, max_kill_streak FROM player_stats WHERE uuid = ?")) {
+            stmt.setString(1, playerUUID.toString());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                stats.kills = rs.getInt("kills");
+                stats.deaths = rs.getInt("deaths");
+                stats.killStreak = rs.getInt("kill_streak");
+                stats.maxKillStreak = rs.getInt("max_kill_streak");
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
         return stats;
     }
 
-    private static void handleSQLException(String message, SQLException e) {
-        Bukkit.getLogger().severe(message + " " + e.getMessage());
-    }
-
     public static class PlayerStats {
-        int kills = 0;
-        int deaths = 0;
-        int killStreak = 0;
-        int maxKillStreak = 0;
+        public int kills = 0, deaths = 0, killStreak = 0, maxKillStreak = 0;
     }
 }

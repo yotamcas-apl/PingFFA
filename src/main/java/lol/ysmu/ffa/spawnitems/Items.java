@@ -38,7 +38,6 @@ public class Items {
     public static void giveSpawnItems(Player player) {
         ConfigurationSection itemsSection = getSpawnItemsConfig().getConfigurationSection("items");
         if (itemsSection == null || itemsSection.getKeys(false).isEmpty()) {
-            // no items configured, disable spawn items
             return;
         }
 

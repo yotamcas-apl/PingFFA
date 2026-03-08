@@ -1,0 +1,30 @@
+title: "&8Global Leaderboards"
+update-interval: 2400
+items:
+  kills:
+    name: "&b&lTop Kills"
+    material: DIAMOND_SWORD
+    slot: 11
+    lore:
+      - ""
+      - "%top_data%"
+      - ""
+      - "&8Auto-refreshes every 2m."
+  deaths:
+    name: "&c&lTop Deaths"
+    material: SKELETON_SKULL
+    slot: 13
+    lore:
+      - ""
+      - "%top_data%"
+      - ""
+      - "&8Auto-refreshes every 2m."
+  moststreak:
+    name: "&e&lHighest Winstreaks"
+    material: NETHER_STAR
+    slot: 15
+    lore:
+      - ""
+      - "%top_data%"
+      - ""
+      - "&8Auto-refreshes every 2m."

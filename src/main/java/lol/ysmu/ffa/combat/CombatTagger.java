@@ -66,12 +66,6 @@ public class CombatTagger implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        event.setDroppedExp(0);
-        getCombatLogs(event.getEntity()).forEach(this::endCombat);
-    }
-
-    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         Combat combatLog = getLastCombatLog(player);

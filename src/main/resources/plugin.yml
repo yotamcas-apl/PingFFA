@@ -13,49 +13,52 @@ description: Made for PingPvP
 
 commands:
   ffa:
+    description: Main admin command for FFA.
     permission: ffa.admin
-  regeneration:
-    permission: ffa.admin
+    usage: /ffa
+  leaderboard:
+    description: View the top player rankings.
+    usage: /leaderboard
   spawn:
+    description: Teleport to the server spawn.
+    usage: /spawn
   setspawn:
+    description: Set the server spawn location.
+    usage: /setspawn
     permission: ffa.admin
   suicide:
     permission: ffa.commands.suicide
-    aliases:
-      - kms
-      - iwanttodie
-      - killme
+    aliases: [kms, iwanttodie, killme]
   broadcast:
     permission: ffa.commands.broadcast
   rules:
+    description: View the server rules.
   sit:
     permission: ffa.commands.sit
   stats:
+    description: View your player statistics.
   heal:
     permission: ffa.commands.heal
   message:
-    aliases:
-      - msg
+    aliases: [msg, w, tell]
   reply:
-    aliases:
-      - r
+    aliases: [r]
   fly:
     permission: ffa.commands.fly
   ping:
+    description: Check your latency.
   nickname:
     permission: ffa.commands.nickname
-    aliases:
-      - nick
+    aliases: [nick]
   settings:
+    description: Open the settings menu.
   coolarena:
     permission: ffa.coolarena.use
-    aliases:
-      - ca
-
+    aliases: [ca]
   toggleautogg:
     permission: ffa.settings.toggleautogg
-  toggledirectionaldamagetilt:
-    permission: ffa.settings.toggledirectionaldamagetilt
+  toggleprivacymode:
+    permission: ffa.settings.toggleprivacymode
   togglementionsound:
     permission: ffa.settings.togglementionsound
   toggleprivatemessages:

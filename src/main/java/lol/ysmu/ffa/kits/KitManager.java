@@ -40,6 +40,8 @@ public class KitManager {
         return folder;
     }
 
+    private static File kitsFolder;
+
     public static void saveKit(CommandSender sender, String kitName) {
         File kitsFolder = createKitsFolder();
         File kitFile = new File(kitsFolder, kitName + ".yml");
