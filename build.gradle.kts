@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "lol.ysmu"
-version = "0.0.1"
+version = "0.0.2"
 description = "PingFFA"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
