@@ -35,6 +35,7 @@ jobs:
         run: |
           # This replaces the version string in your gradle file with the new tag
           sed -i "s/version = \".*\"/version = \"${{ steps.tag_version.outputs.new_version }}\"/" build.gradle.kts
+          sed -i "s/version: .*/version: ${{ steps.tag_version.outputs.new_version }}/" src/main/resources/plugin.yml
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add build.gradle.kts
