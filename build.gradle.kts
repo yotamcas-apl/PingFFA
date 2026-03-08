@@ -47,7 +47,7 @@ dependencies {
 tasks.shadowJar {
     minimize()
     archiveFileName.set("${project.name}-${project.version}.jar")
-    relocate("com.zaxxer.hikari", "lol.ysmu.ffa.shaded.hikari")
+    //relocate("com.zaxxer.hikari", "lol.ysmu.ffa.shaded.hikari")
 }
 
 tasks.build {
