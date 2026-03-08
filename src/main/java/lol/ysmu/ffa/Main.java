@@ -3,7 +3,6 @@ package lol.ysmu.ffa;
 import lol.ysmu.ffa.combat.CombatTagger;
 import lol.ysmu.ffa.commands.*;
 import lol.ysmu.ffa.commands.settings.*;
-import lol.ysmu.ffa.deathmessages.DeathMessagesManager;
 import lol.ysmu.ffa.kits.KitManager;
 import lol.ysmu.ffa.lobby.VoidListener;
 import lol.ysmu.ffa.lobby.SpawnCommands;
@@ -37,7 +36,6 @@ public final class Main extends JavaPlugin {
     private FileConfiguration config;
     private Stats stats;
     private SpawnManager spawnManager;
-    private DeathMessagesManager deathMessagesManager;
     private MessageCommand messageCommand;
     private static File kitsFolder;
     private CombatTagger combatTagger;
@@ -154,8 +152,6 @@ public final class Main extends JavaPlugin {
         getCommand("setspawn").setExecutor(new SpawnCommands(spawnManager, this));
         getCommand("spawn").setExecutor(new SpawnCommands(spawnManager, this));
         getServer().getPluginManager().registerEvents(new VoidListener(this), this);
-
-        deathMessagesManager = new DeathMessagesManager(this);
 
         int combatTimer = getConfig().getInt("combat-tagger.combat-timer", 10);
         combatTagger = new CombatTagger(this, combatTimer);
