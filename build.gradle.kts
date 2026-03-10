@@ -50,6 +50,17 @@ tasks.shadowJar {
     //relocate("com.zaxxer.hikari", "lol.ysmu.ffa.shaded.hikari")
 }
 
+tasks.processResources {
+    val props = mapOf("version" to project.version)
+    inputs.properties(props)
+
+    filteringCharset = "UTF-8"
+
+    filesMatching("plugin.yml") {
+        expand(props)
+    }
+}
+
 tasks.build {
     dependsOn(tasks.shadowJar)
 }
